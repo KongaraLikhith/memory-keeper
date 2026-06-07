@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Memory Keeper</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:#120e09;color:#e8d5b0;font-family:'Inter',sans-serif;min-height:100vh}
+.wrap{max-width:1140px;margin:0 auto;padding:0 20px 48px}
+.hero{text-align:center;padding:40px 0 22px;background:radial-gradient(ellipse 80% 50% at 50% 0%,rgba(180,130,60,.1) 0%,transparent 70%)}
+.hero-icon{font-size:2.8em;display:block;margin-bottom:8px;filter:drop-shadow(0 0 24px rgba(200,155,70,.45));animation:float 5s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.hero h1{font-family:'Playfair Display',serif;font-size:3em;font-weight:700;color:#f5dfa0;letter-spacing:4px;text-shadow:0 0 60px rgba(200,155,70,.2);margin-bottom:6px}
+.hero-sub{font-family:'Crimson Text',serif;font-size:1.15em;color:#b08555;font-style:italic;margin-bottom:14px}
+.badge{display:inline-block;background:rgba(160,120,55,.1);border:1px solid rgba(160,120,55,.2);border-radius:40px;padding:5px 18px;font-size:.76em;color:#c4a060;letter-spacing:.4px}
+.ornament{text-align:center;color:#3a2a12;font-size:1.1em;letter-spacing:10px;margin:8px 0 20px}
+
+/* PROFILES BAR */
+.profiles-bar{margin-bottom:20px}
+.profiles-bar-title{font-size:.72em;color:#6a5030;letter-spacing:.8px;text-transform:uppercase;margin-bottom:10px;font-weight:500}
+.profiles-scroll{display:flex;gap:10px;flex-wrap:wrap}
+.profile-chip{display:flex;align-items:center;gap:8px;background:rgba(160,120,55,.08);border:1px solid rgba(160,120,55,.15);border-radius:40px;padding:7px 14px;cursor:pointer;transition:all .2s}
+.profile-chip:hover{background:rgba(160,120,55,.18);border-color:rgba(160,120,55,.4)}
+.profile-chip .chip-name{font-family:'Playfair Display',serif;font-size:.88em;color:#c89840}
+.profile-chip .chip-meta{font-size:.72em;color:#6a5030}
+.profile-chip .chip-del{background:none;border:none;color:#4a3020;cursor:pointer;font-size:.85em;padding:0 0 0 4px;transition:color .15s}
+.profile-chip .chip-del:hover{color:#e07060}
+.no-profiles{font-size:.8em;color:#3a2a14;font-style:italic}
+
+/* STATS BAR */
+.stats-bar{display:flex;gap:12px;margin-bottom:16px}
+.stat{background:rgba(160,120,55,.07);border:1px solid rgba(160,120,55,.12);border-radius:10px;padding:10px 16px;flex:1;text-align:center}
+.stat-num{font-family:'Playfair Display',serif;font-size:1.4em;color:#c89840;display:block}
+.stat-label{font-size:.7em;color:#6a5030;text-transform:uppercase;letter-spacing:.5px}
+
+/* GRID */
+.grid{display:grid;grid-template-columns:360px 1fr;gap:20px;align-items:start}
+.card{background:linear-gradient(160deg,#1c1610,#1a1409);border:1px solid rgba(160,120,55,.18);border-radius:18px;padding:22px;box-shadow:0 8px 40px rgba(0,0,0,.5)}
+.card-title{font-family:'Playfair Display',serif;font-size:.8em;color:#c89840;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid rgba(160,120,55,.12);display:flex;align-items:center;gap:7px}
+.field{margin-bottom:13px}
+.field label{display:block;font-size:.71em;font-weight:500;color:#9a7845;letter-spacing:.8px;text-transform:uppercase;margin-bottom:5px}
+.field input[type=text],.field textarea{width:100%;background:rgba(255,255,255,.03);border:1px solid rgba(160,120,55,.18);border-radius:8px;color:#e8d5b0;font-family:'Crimson Text',serif;font-size:1em;padding:9px 12px;outline:none;transition:border-color .2s;resize:vertical}
+.field input[type=text]::placeholder,.field textarea::placeholder{color:#4a3820}
+.field input[type=text]:focus,.field textarea:focus{border-color:rgba(160,120,55,.5);box-shadow:0 0 0 3px rgba(160,120,55,.07)}
+.section-box{background:rgba(0,0,0,.2);border:1px solid rgba(160,120,55,.1);border-radius:12px;padding:14px;margin-bottom:13px}
+.section-box-title{font-size:.72em;color:#7a6040;letter-spacing:.8px;text-transform:uppercase;margin-bottom:10px;font-weight:500}
+.rec-row{display:flex;gap:8px;margin-bottom:10px}
+.rec-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;background:rgba(180,55,55,.12);border:1px solid rgba(200,80,80,.2);border-radius:8px;color:#d4907a;font-size:.82em;font-weight:500;padding:9px 10px;cursor:pointer;transition:all .2s;white-space:nowrap}
+.rec-btn:hover{background:rgba(180,55,55,.22);border-color:rgba(200,80,80,.45)}
+.rec-btn.recording{background:rgba(200,40,40,.18);border-color:#c03030;color:#ff8888;animation:pulse 1.2s ease-in-out infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(200,50,50,.4)}50%{box-shadow:0 0 0 6px rgba(200,50,50,0)}}
+.add-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;background:rgba(160,120,55,.07);border:1px dashed rgba(160,120,55,.22);border-radius:8px;color:#7a6040;font-size:.82em;padding:9px 10px;cursor:pointer;transition:all .2s;position:relative;white-space:nowrap}
+.add-btn:hover{border-color:rgba(160,120,55,.5);background:rgba(160,120,55,.12);color:#c89840}
+.add-btn input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.file-list{display:flex;flex-direction:column;gap:6px}
+.file-item{display:flex;align-items:center;gap:8px;background:rgba(160,120,55,.07);border:1px solid rgba(160,120,55,.12);border-radius:8px;padding:7px 10px;animation:fadeIn .2s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+.file-item .file-icon{font-size:1.1em;flex-shrink:0}
+.file-item .file-name{flex:1;font-size:.8em;color:#b09060;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:'Crimson Text',serif}
+.file-item .file-dur{font-size:.72em;color:#6a5030;flex-shrink:0}
+.file-item .remove-btn{background:none;border:none;color:#5a3a2a;cursor:pointer;font-size:1em;padding:2px 4px;border-radius:4px;transition:all .15s;flex-shrink:0}
+.file-item .remove-btn:hover{color:#e07060;background:rgba(200,80,60,.1)}
+.empty-state{font-size:.78em;color:#3a2a14;text-align:center;padding:8px;font-style:italic}
+.photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:6px}
+.photo-thumb{position:relative;aspect-ratio:1;border-radius:8px;overflow:hidden;border:1px solid rgba(160,120,55,.2)}
+.photo-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.photo-thumb .remove-btn{position:absolute;top:4px;right:4px;background:rgba(0,0,0,.7);border:none;color:#e8d5b0;cursor:pointer;font-size:.85em;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.photo-thumb .remove-btn:hover{background:rgba(200,60,60,.8)}
+.btn{width:100%;background:linear-gradient(135deg,#7a5528,#c4913f,#7a5528);background-size:200% auto;border:1px solid rgba(196,145,63,.4);border-radius:10px;color:#fdf0d0;font-family:'Playfair Display',serif;font-size:1em;font-weight:600;letter-spacing:1.5px;padding:13px;cursor:pointer;transition:all .4s;box-shadow:0 4px 20px rgba(120,80,30,.3);margin-top:8px}
+.btn:hover:not(:disabled){background-position:right;box-shadow:0 6px 30px rgba(120,80,30,.5);transform:translateY(-1px)}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.how{background:rgba(160,120,55,.04);border:1px solid rgba(160,120,55,.09);border-radius:10px;padding:11px 14px;margin-top:10px;font-size:.78em;color:#6a5030;line-height:1.9}
+.tab-nav{display:flex;border-bottom:1px solid rgba(160,120,55,.15);margin-bottom:14px}
+.tab-btn{background:none;border:none;border-bottom:2px solid transparent;color:#6a5030;font-family:'Playfair Display',serif;font-size:.85em;padding:8px 14px 10px;cursor:pointer;transition:all .2s;margin-bottom:-1px}
+.tab-btn:hover{color:#c89840}
+.tab-btn.active{color:#c89840;border-bottom-color:#c89840}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+.output{width:100%;min-height:300px;background:rgba(255,255,255,.02);border:1px solid rgba(160,120,55,.1);border-radius:10px;color:#ddc898;font-family:'Crimson Text',serif;font-size:1.08em;line-height:1.8;padding:16px;resize:vertical;outline:none}
+.loading{display:none;text-align:center;padding:60px 20px}
+.loading.show{display:block}
+.candle{font-size:2.8em;display:block;margin-bottom:12px;animation:flicker 1.2s ease-in-out infinite alternate}
+@keyframes flicker{0%{opacity:.7;transform:scale(.97) rotate(-1deg);filter:drop-shadow(0 0 8px rgba(200,155,70,.4))}100%{opacity:1;transform:scale(1.03) rotate(1deg);filter:drop-shadow(0 0 22px rgba(200,155,70,.7))}}
+.loading p{font-family:'Crimson Text',serif;font-style:italic;color:#8b6535;font-size:1.05em}
+.progress-bar{width:60%;margin:14px auto 0;height:2px;background:rgba(160,120,55,.15);border-radius:2px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,#7a5528,#c4913f);border-radius:2px;animation:progress 90s linear forwards}
+@keyframes progress{0%{width:0%}100%{width:95%}}
+.footer{text-align:center;margin-top:36px;padding-top:20px;border-top:1px solid rgba(160,120,55,.1);color:#4a3518;font-size:.78em;line-height:2.1;font-style:italic}
+@media(max-width:780px){.grid{grid-template-columns:1fr}.hero h1{font-size:2.2em}.photo-grid{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero">
+    <span class="hero-icon">📖</span>
+    <h1>Memory Keeper</h1>
+    <p class="hero-sub">Preserve voices, faces & stories — forever, privately.</p>
+    <span class="badge">🔒 Fully Private &nbsp;·&nbsp; Qwen2.5-7B + Whisper + BLIP &nbsp;·&nbsp; No data stored externally</span>
+  </div>
+  <div class="ornament">— ✦ —</div>
+
+  <!-- SAVED PROFILES -->
+  <div class="profiles-bar">
+    <div class="profiles-bar-title">📂 Saved Memory Profiles — click to load</div>
+    <div class="profiles-scroll" id="profilesScroll">
+      <span class="no-profiles" id="noProfiles">No profiles yet — create your first one below</span>
+    </div>
+  </div>
+
+  <div class="grid">
+
+    <!-- INPUT -->
+    <div class="card">
+      <div class="card-title">👤 About This Person</div>
+      <div class="field">
+        <label>Their Name</label>
+        <input type="text" id="name" placeholder="e.g. Grandma Rose, Uncle Samuel..." oninput="onNameChange()">
+      </div>
+
+      <!-- PROFILE STATS -->
+      <div id="profileStats" style="display:none;margin-bottom:13px">
+        <div class="stats-bar">
+          <div class="stat">
+            <span class="stat-num" id="statSessions">0</span>
+            <span class="stat-label">Sessions</span>
+          </div>
+          <div class="stat">
+            <span class="stat-num" id="statMemories">0</span>
+            <span class="stat-label">Memories</span>
+          </div>
+          <div class="stat">
+            <span class="stat-num" id="statPhotos">0</span>
+            <span class="stat-label">Photos</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-title" style="margin-top:4px">🕰️ Add New Memories</div>
+
+      <!-- AUDIO -->
+      <div class="section-box">
+        <div class="section-box-title">🎙️ Voice Memories</div>
+        <div class="rec-row">
+          <button class="rec-btn" id="recBtn" onclick="toggleRecord()">🎙️ Record</button>
+          <div class="add-btn">
+            📁 Upload Audio
+            <input type="file" accept="audio/*" multiple onchange="addAudioFiles(this)">
+          </div>
+        </div>
+        <div class="file-list" id="audioList">
+          <div class="empty-state" id="audioEmpty">No voice memories added</div>
+        </div>
+      </div>
+
+      <!-- PHOTOS -->
+      <div class="section-box">
+        <div class="section-box-title">📸 Photos</div>
+        <div class="add-btn" style="width:100%;border-radius:8px;padding:9px;margin-bottom:8px">
+          📁 Upload Photos
+          <input type="file" accept="image/*" multiple onchange="addPhotoFiles(this)">
+        </div>
+        <div class="photo-grid" id="photoGrid"></div>
+        <div class="empty-state" id="photoEmpty">No photos added</div>
+      </div>
+
+      <!-- TEXT -->
+      <div class="field">
+        <label>✍️ Written Memory</label>
+        <textarea id="text" rows="4" placeholder="Where did they grow up? Who did they love? What made them laugh?"></textarea>
+      </div>
+
+      <button class="btn" id="btn" onclick="generate()">✨ Add Memories & Generate Book</button>
+
+      <div class="how">
+        🕰️ Each session adds to the profile — the book gets richer over time<br>
+        🎙️ Voice → <em>Whisper</em> &nbsp;·&nbsp; 📸 Photo → <em>BLIP</em> &nbsp;·&nbsp; 📖 Story → <em>Qwen2.5-7B</em><br>
+        🔒 Stored locally on server · Nothing sent to third parties
+      </div>
+    </div>
+
+    <!-- OUTPUT -->
+    <div class="card">
+      <div class="card-title">📚 The Memory Book</div>
+
+      <div id="loading" class="loading">
+        <span class="candle">🕯️</span>
+        <p>Weaving memories into stories...</p>
+        <p style="color:#4a3518;font-size:.82em;margin-top:6px">Takes about 60–90 seconds</p>
+        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      </div>
+
+      <div id="book">
+        <div class="tab-nav">
+          <button class="tab-btn active" onclick="tab('timeline',this)">📅 Timeline</button>
+          <button class="tab-btn" onclick="tab('story',this)">📖 Story</button>
+          <button class="tab-btn" onclick="tab('letter',this)">💌 Letter</button>
+          <button class="tab-btn" onclick="tab('people',this)">👥 People</button>
+        </div>
+        <div id="tab-timeline" class="tab-panel active">
+          <textarea class="output" id="out-timeline" readonly placeholder="Life milestones will appear here..."></textarea>
+        </div>
+        <div id="tab-story" class="tab-panel">
+          <textarea class="output" id="out-story" readonly placeholder="Narrative chapter will appear here..."></textarea>
+        </div>
+        <div id="tab-letter" class="tab-panel">
+          <textarea class="output" id="out-letter" readonly placeholder="Letter to future generations will appear here..."></textarea>
+        </div>
+        <div id="tab-people" class="tab-panel">
+          <textarea class="output" id="out-people" readonly placeholder="Important people will appear here..."></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    Built with ❤️ for the 🤗 Build Small Hackathon 2026 &nbsp;·&nbsp; Qwen2.5-7B · Whisper · BLIP · Modal · HF Spaces<br>
+    <em>"The life of the dead is placed in the memory of the living." — Cicero</em>
+  </div>
+</div>
+
+<script>
+let audioItems = [], photoItems = [];
+let mediaRecorder = null, audioChunks = [], isRecording = false, itemId = 0;
+
+// ── Load profiles on start ──
+window.onload = () => loadProfiles();
+
+async function loadProfiles() {
+  const resp = await fetch('/profiles');
+  const profiles = await resp.json();
+  const scroll = document.getElementById('profilesScroll');
+  const none = document.getElementById('noProfiles');
+  if (profiles.length === 0) {
+    none.style.display = 'block';
+    return;
+  }
+  none.style.display = 'none';
+  scroll.innerHTML = '';
+  profiles.forEach(p => {
+    const chip = document.createElement('div');
+    chip.className = 'profile-chip';
+    chip.innerHTML = `
+      <span class="chip-name" onclick="loadProfile('${p.name}')">${p.name}</span>
+      <span class="chip-meta" onclick="loadProfile('${p.name}')">${p.memories} memories · ${p.photos} photos</span>
+      <button class="chip-del" onclick="deleteProfile('${p.name}', event)" title="Delete">✕</button>
+    `;
+    scroll.appendChild(chip);
+  });
+}
+
+async function loadProfile(name) {
+  document.getElementById('name').value = name;
+  const resp = await fetch(`/profile/${encodeURIComponent(name)}`);
+  const profile = await resp.json();
+  document.getElementById('profileStats').style.display = 'block';
+  document.getElementById('statSessions').textContent = profile.sessions || 0;
+  document.getElementById('statMemories').textContent = profile.transcripts?.length || 0;
+  document.getElementById('statPhotos').textContent = profile.photo_descriptions?.length || 0;
+}
+
+async function deleteProfile(name, e) {
+  e.stopPropagation();
+  if (!confirm(`Delete all memories for "${name}"?`)) return;
+  await fetch(`/profile/${encodeURIComponent(name)}`, {method:'DELETE'});
+  loadProfiles();
+  if (document.getElementById('name').value === name) {
+    document.getElementById('name').value = '';
+    document.getElementById('profileStats').style.display = 'none';
+  }
+}
+
+function onNameChange() {
+  const name = document.getElementById('name').value.trim();
+  if (!name) {
+    document.getElementById('profileStats').style.display = 'none';
+  }
+}
+
+// ── Recording ──
+async function toggleRecord() {
+  if (!isRecording) {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({audio:true});
+      mediaRecorder = new MediaRecorder(stream);
+      audioChunks = [];
+      mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+      mediaRecorder.onstop = () => {
+        const blob = new Blob(audioChunks, {type:'audio/wav'});
+        const ts = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+        audioItems.push({id:++itemId, blob, name:`Recording ${ts}`, type:'recorded'});
+        renderAudioList();
+      };
+      mediaRecorder.start();
+      isRecording = true;
+      document.getElementById('recBtn').innerHTML = '⏹️ Stop';
+      document.getElementById('recBtn').classList.add('recording');
+    } catch(e) { alert('Microphone access denied.'); }
+  } else {
+    mediaRecorder.stop();
+    mediaRecorder.stream.getTracks().forEach(t => t.stop());
+    isRecording = false;
+    document.getElementById('recBtn').innerHTML = '🎙️ Record';
+    document.getElementById('recBtn').classList.remove('recording');
+  }
+}
+
+function addAudioFiles(input) {
+  Array.from(input.files).forEach(f => {
+    audioItems.push({id:++itemId, blob:f, name:f.name, type:'file'});
+  });
+  input.value = '';
+  renderAudioList();
+}
+
+function removeAudio(id) {
+  audioItems = audioItems.filter(a => a.id !== id);
+  renderAudioList();
+}
+
+function renderAudioList() {
+  const list = document.getElementById('audioList');
+  const empty = document.getElementById('audioEmpty');
+  if (audioItems.length === 0) {
+    list.innerHTML = '';
+    list.appendChild(empty);
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+  list.innerHTML = '';
+  audioItems.forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'file-item';
+    const size = item.blob.size ? `${(item.blob.size/1024).toFixed(0)} KB` : '';
+    div.innerHTML = `
+      <span class="file-icon">${item.type==='recorded'?'🎙️':'🎵'}</span>
+      <span class="file-name">${item.name}</span>
+      <span class="file-dur">${size}</span>
+      <button class="remove-btn" onclick="removeAudio(${item.id})">✕</button>
+    `;
+    list.appendChild(div);
+  });
+}
+
+// ── Photos ──
+function addPhotoFiles(input) {
+  Array.from(input.files).forEach(f => {
+    photoItems.push({id:++itemId, file:f, url:URL.createObjectURL(f)});
+  });
+  input.value = '';
+  renderPhotoGrid();
+}
+
+function removePhoto(id) {
+  const item = photoItems.find(p => p.id === id);
+  if (item) URL.revokeObjectURL(item.url);
+  photoItems = photoItems.filter(p => p.id !== id);
+  renderPhotoGrid();
+}
+
+function renderPhotoGrid() {
+  const grid = document.getElementById('photoGrid');
+  const empty = document.getElementById('photoEmpty');
+  grid.innerHTML = '';
+  if (photoItems.length === 0) { empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+  photoItems.forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'photo-thumb';
+    div.innerHTML = `
+      <img src="${item.url}">
+      <button class="remove-btn" onclick="removePhoto(${item.id})">✕</button>
+    `;
+    grid.appendChild(div);
+  });
+}
+
+// ── Tabs ──
+function tab(id, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ── Generate ──
+async function generate() {
+  const name = document.getElementById('name').value.trim();
+  const text = document.getElementById('text').value.trim();
+  if (!name) { alert('Please enter a name.'); return; }
+  if (!text && audioItems.length === 0 && photoItems.length === 0) {
+    alert('Please add at least one memory.'); return;
+  }
+
+  document.getElementById('btn').disabled = true;
+  document.getElementById('loading').classList.add('show');
+  document.getElementById('book').style.opacity = '0.15';
+  const pf = document.getElementById('progressFill');
+  pf.style.animation = 'none'; pf.offsetHeight;
+  pf.style.animation = 'progress 90s linear forwards';
+
+  const fd = new FormData();
+  fd.append('name', name);
+  fd.append('text', text || '');
+  audioItems.forEach(item => fd.append('audios', item.blob, item.name));
+  photoItems.forEach(item => fd.append('photos', item.file, item.file.name));
+
+  try {
+    const resp = await fetch('/run', {method:'POST', body:fd});
+    const data = await resp.json();
+    if (data.error) { alert('Error: ' + data.error); return; }
+
+    document.getElementById('out-timeline').value = data.timeline || '';
+    document.getElementById('out-story').value = data.chapter || '';
+    document.getElementById('out-letter').value = data.letter || '';
+    document.getElementById('out-people').value = data.people || '';
+
+    // Update stats
+    document.getElementById('profileStats').style.display = 'block';
+    document.getElementById('statSessions').textContent = data.sessions || 0;
+    document.getElementById('statMemories').textContent = data.total_memories || 0;
+    document.getElementById('statPhotos').textContent = data.total_photos || 0;
+
+    // Clear inputs for next session
+    audioItems = []; photoItems = [];
+    renderAudioList(); renderPhotoGrid();
+    document.getElementById('text').value = '';
+
+    // Refresh profiles bar
+    loadProfiles();
+    tab('timeline', document.querySelector('.tab-btn'));
+
+  } catch(e) {
+    alert('Error: ' + e.message);
+  } finally {
+    document.getElementById('btn').disabled = false;
+    document.getElementById('loading').classList.remove('show');
+    document.getElementById('book').style.opacity = '1';
+  }
+}
+</script>
+</body>
+</html>
