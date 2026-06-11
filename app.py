@@ -42,9 +42,9 @@ def list_profiles() -> list:
                         "photos": len(p.get("photo_descriptions", []))
                     })
                 except: pass
-    return sorted(profiles, key=lambda x: x["name"])
+import gradio as gr
 
-fast_app = FastAPI()
+fast_app = gr.Server()
 
 async def cleanup_old_memories():
     """Background task to delete profile JSONs older than 48 hours."""
@@ -162,4 +162,4 @@ async def run(
     return JSONResponse(result)
 
 if __name__ == "__main__":
-    uvicorn.run(fast_app, host="0.0.0.0", port=7860)
+    fast_app.launch(server_name="0.0.0.0", server_port=7860)

@@ -17,5 +17,5 @@ WORKDIR $HOME/app
 
 COPY --chown=user . $HOME/app
 
-# Start the FastAPI app on port 7860
-CMD ["uvicorn", "app:fast_app", "--host", "0.0.0.0", "--port", "7860"]
+# Start the Gradio Server app on port 7860
+CMD ["python", "app.py"]
