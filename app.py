@@ -9,8 +9,8 @@ TRANSCRIBE_URL = "https://likhith0715--memory-keeper-transcribe-audio.modal.run"
 PHOTO_URL = "https://likhith0715--memory-keeper-describe-photo.modal.run"
 BOOK_URL = "https://likhith0715--memory-keeper-build-memory-book.modal.run"
 
-# Storage directory — persists on HF Spaces
-STORAGE_DIR = "/data/memories"
+# Storage directory — persists on HF Spaces if mounted, otherwise local to container
+STORAGE_DIR = "./data/memories"
 os.makedirs(STORAGE_DIR, exist_ok=True)
 
 def profile_path(name: str) -> str:
