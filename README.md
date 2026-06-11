@@ -1,44 +1,47 @@
 # Memory Keeper 🌲 *(Track: Thousand Token Wood)*
 
-🚀 **[Live App (Hugging Face Space)](https://huggingface.co/spaces/build-small-hackathon/memory-keeper)** | 🎥 **[Watch the Demo Video](https://drive.google.com/file/d/1MCXUOhq1C8chFCno9T7GjPm8BOkAZX_X/view?usp=sharing)** | 📝 **[LinkedIn Post](https://www.linkedin.com/posts/likhith-kongara-049b87212_github-kongaralikhithmemory-keeper-memory-activity-7470707614285410304-tbUS)**
+💻 **[GitHub Repository](https://github.com/KongaraLikhith/memory-keeper)** | 🎥 **[Watch the Demo Video](https://drive.google.com/file/d/1MCXUOhq1C8chFCno9T7GjPm8BOkAZX_X/view?usp=sharing)** | 📝 **[LinkedIn Post](https://www.linkedin.com/posts/likhith-kongara-049b87212_github-kongaralikhithmemory-keeper-memory-activity-7470707614285410304-tbUS)**
 
-A lightweight, serverless AI pipeline that acts as a personal digital archive. Built during the Hugging Face Build Small Hackathon, Memory Keeper takes disparate personal media inputs—like raw audio voice notes and images—and processes them through specialized serverless models to generate structured, contextual "memory books."
+## 📖 The Story: Why I Built Memory Keeper
 
-Instead of maintaining heavy, always-on backend infrastructure, the core pipeline is broken into independent, on-demand serverless tasks managed completely via Modal.
+We all have those little moments—a beautiful sunset, a fleeting thought we record as a voice note, or a random photo that captures a specific feeling. But more often than not, these memories get lost in the endless scroll of our camera rolls or the unorganized abyss of our voice memos. 
 
-🔌 **Off the Grid Badge:** This application uses **zero proprietary cloud APIs** (no OpenAI, Anthropic, Gemini, etc.). Every single AI operation is performed using open-weight models (`Qwen2.5-7B`, `Whisper-base`, `BLIP-base`) hosted on independent Modal serverless endpoints.
+I built **Memory Keeper** for the Hugging Face "Build Small" Hackathon because I wanted a whimsical, personal digital archive that actually *understands* these fragments. I wanted a tool that could take my raw audio notes and spontaneous photos, and weave them together into beautifully structured storybooks and letters to my future self. 
 
-## Architecture Overview
+I chose the **Thousand Token Wood** track because this project isn't just about utility; it’s about creating something deeply personal, experimental, and delightful.
 
-The system is designed with a decoupled frontend-backend architecture:
-- **Frontend / API Layer** (`app.py`, `index.html`): A clean, professional user interface to manage profiles, upload media files, and display consolidated timelines. Built using `gradio.Server` to leverage Custom UI functionality, running in a Docker container on Hugging Face Spaces.
-- **Compute Engine**: An orchestrated serverless application running on Modal that triggers specialized tasks (using A10G GPUs) only when needed, keeping memory overhead minimal and performance high. The AI endpoints are external and pre-deployed.
+---
 
-### Project Structure
-- `app.py` - Gradio Server routing requests and managing state.
-- `index.html` - Professional custom frontend UI.
-- `Dockerfile` - Deployment configuration for Hugging Face Spaces.
-- `requirements.txt` - Project dependencies.
+## ✨ The Magic: How It Works
 
-## Core Engine Functions
+Memory Keeper is a multi-modal AI pipeline that acts as your personal archivist:
+1. **Upload:** You upload a photo, record a voice note, or simply type a thought into the custom glassmorphic UI.
+2. **Perception:** The backend immediately spins up specialized "small models" to perceive the inputs. It transcribes the audio and generates rich semantic descriptions of the photos.
+3. **Synthesis:** A central orchestrator LLM takes all these pieces, looks at your history, and writes a narrative timeline, a structured story, and a personal letter summarizing the memory. 
 
-Under the main memory-keeper container app, tasks are isolated into discrete, scalable serverless functions on Modal:
+---
 
-- `describe_photo`: Processes uploaded images using `Salesforce/blip-image-captioning-base` to extract semantic context and visual elements.
-- `transcribe_audio`: Spins up transient GPU workers to transcribe spoken audio clips using `openai/whisper`.
-- `build_memory_book`: The orchestrator LLM function (using `Qwen2.5-7B`) that compiles the structural logs, updates profiles, and outputs the final historical narrative, timelines, and letters.
+## 🏆 Hackathon Bonuses
 
-## Deployment Instructions
+### 🔌 Off the Grid Badge
+This application uses **zero proprietary cloud APIs** (no OpenAI, Anthropic, Gemini, etc.). Every single AI operation is performed using open-weight models hosted on independent, transient serverless endpoints:
+- **Language:** `Qwen/Qwen2.5-7B-Instruct`
+- **Audio:** `openai/whisper-base`
+- **Vision:** `Salesforce/blip-image-captioning-base`
 
-### Hugging Face Spaces (Frontend)
-The frontend is designed to be hosted seamlessly on Hugging Face Spaces as a Docker Space.
+### 📡 Sharing is Caring Badge
+Curious how the data flows? Check out the [`pipeline_flow.md`](./pipeline_flow.md) document in this repository for a complete architectural breakdown of the agentic pipeline.
 
-1. Create a new Space on Hugging Face.
-2. Choose **Docker** -> **Blank** as the SDK.
-3. Connect this GitHub repository directly to your Hugging Face Space.
-4. The Space will automatically build the Dockerfile and launch the Gradio custom server on port 7860.
+---
 
-## Local Development
+## 🏗️ Architecture & Deployment
+
+To keep the application incredibly lightweight while maintaining a premium feel, the system uses a decoupled frontend-backend architecture:
+
+- **Frontend (Hugging Face Spaces):** A completely custom HTML/CSS UI built on top of `gradio.Server`. This bypasses the standard Gradio blocks to deliver a stunning visual experience while strictly adhering to the hackathon's Gradio requirement. 
+- **Compute Engine (Modal):** Heavy AI perception tasks are offloaded to A10G GPUs via Modal. These endpoints are entirely serverless, meaning they scale to zero when not in use, keeping the memory footprint minimal.
+
+### Local Development
 To run the frontend locally for testing:
 ```bash
 pip install -r requirements.txt
