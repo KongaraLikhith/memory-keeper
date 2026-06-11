@@ -1,6 +1,6 @@
 # Memory Keeper
 
-🚀 **[Live App (Hugging Face Space)](https://huggingface.co/spaces/build-small-hackathon/memory-keeper)** | 🎥 **[Watch the Demo Video](https://drive.google.com/file/d/1MCXUOhq1C8chFCno9T7GjPm8BOkAZX_X/view?usp=sharing)** | 📝 **[LinkedIn Post](PASTE_YOUR_LINKEDIN_LINK_HERE)**
+🚀 **[Live App (Hugging Face Space)](https://huggingface.co/spaces/build-small-hackathon/memory-keeper)** | 🎥 **[Watch the Demo Video](https://drive.google.com/file/d/1MCXUOhq1C8chFCno9T7GjPm8BOkAZX_X/view?usp=sharing)** | 📝 **[LinkedIn Post](https://www.linkedin.com/posts/likhith-kongara-049b87212_github-kongaralikhithmemory-keeper-memory-activity-7470707614285410304-tbUS)**
 
 A lightweight, serverless AI pipeline that acts as a personal digital archive. Built during the Hugging Face Build Small Hackathon, Memory Keeper takes disparate personal media inputs—like raw audio voice notes and images—and processes them through specialized serverless models to generate structured, contextual "memory books."
 
