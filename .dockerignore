@@ -1,0 +1,8 @@
+.git
+.gitignore
+.ipynb_checkpoints
+*.ipynb
+__pycache__
+modal_inference.py
+README.md
+data/

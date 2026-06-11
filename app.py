@@ -1,5 +1,5 @@
-
-import requests, json, os
+import requests, json, os, asyncio, time
+from datetime import datetime
 from fastapi import FastAPI, UploadFile, File, Form
 from fastapi.responses import HTMLResponse, JSONResponse
 from typing import List
@@ -14,7 +14,7 @@ STORAGE_DIR = "/data/memories"
 os.makedirs(STORAGE_DIR, exist_ok=True)
 
 def profile_path(name: str) -> str:
-    safe = "".join(c if c.isalnum() or c in "-_ " else "_" for c in name).strip()
+    safe = "".join(c if c.isalnum() or c in "-_ " else "_" for c in name).strip().lower()
     return f"{STORAGE_DIR}/{safe}.json"
 
 def load_profile(name: str) -> dict:
@@ -22,7 +22,7 @@ def load_profile(name: str) -> dict:
     if os.path.exists(path):
         with open(path) as f:
             return json.load(f)
-    return {"name": name, "transcripts": [], "photo_descriptions": [], "sessions": 0}
+    return {"name": name, "transcripts": [], "photo_descriptions": [], "sessions": 0, "history": []}
 
 def save_profile(profile: dict):
     with open(profile_path(profile["name"]), "w") as f:
@@ -45,6 +45,24 @@ def list_profiles() -> list:
     return sorted(profiles, key=lambda x: x["name"])
 
 fast_app = FastAPI()
+
+async def cleanup_old_memories():
+    """Background task to delete profile JSONs older than 48 hours."""
+    while True:
+        now = time.time()
+        for fname in os.listdir(STORAGE_DIR):
+            if fname.endswith(".json"):
+                path = os.path.join(STORAGE_DIR, fname)
+                try:
+                    if now - os.path.getmtime(path) > 48 * 3600:
+                        os.remove(path)
+                except Exception:
+                    pass
+        await asyncio.sleep(3600)  # Check every hour
+
+@fast_app.on_event("startup")
+async def startup_event():
+    asyncio.create_task(cleanup_old_memories())
 
 @fast_app.get("/", response_class=HTMLResponse)
 def index():
@@ -124,9 +142,23 @@ async def run(
     }, timeout=600)
 
     result = resp.json()
+
+    # Append to history and save again
+    history_entry = {
+        "session": profile["sessions"],
+        "timestamp": datetime.now().strftime("%b %d, %Y - %H:%M"),
+        "timeline": result.get("timeline", ""),
+        "chapter": result.get("chapter", ""),
+        "letter": result.get("letter", ""),
+        "people": result.get("people", "")
+    }
+    profile.setdefault("history", []).append(history_entry)
+    save_profile(profile)
+
     result["sessions"] = profile["sessions"]
     result["total_memories"] = len(profile["transcripts"])
     result["total_photos"] = len(profile["photo_descriptions"])
+    result["history"] = profile["history"]
     return JSONResponse(result)
 
 if __name__ == "__main__":
