@@ -6,6 +6,8 @@ A lightweight, serverless AI pipeline that acts as a personal digital archive. B
 
 Instead of maintaining heavy, always-on backend infrastructure, the core pipeline is broken into independent, on-demand serverless tasks managed completely via Modal.
 
+🔌 **Off the Grid Badge:** This application uses **zero proprietary cloud APIs** (no OpenAI, Anthropic, Gemini, etc.). Every single AI operation is performed using open-weight models (`Qwen2.5-7B`, `Whisper-base`, `BLIP-base`) hosted on independent Modal serverless endpoints.
+
 ## Architecture Overview
 
 The system is designed with a decoupled frontend-backend architecture:
